@@ -1,0 +1,30 @@
+---
+title: "Visualization Lab 6"
+author: "Roshni Sundaramurthy (rossu809) & Brian Masinde (brima748)"
+date: "12 October 2018"
+output:
+  html_document:
+    df_print: paged
+  html_notebook:
+    theme: journal
+  pdf_document: default
+fontsize: 11pt
+#bibliography: references.bib
+---
+
+```{r libraries, message=FALSE, warning=FALSE, echo=FALSE}
+library(ggplot2)
+library(plotly)
+library(visNetwork)
+library(dplyr)
+```
+
+## Assignment 1
+
+### 1.1 Plot the network
+
+```{r echo=FALSE}
+df1<-read.delim("trainMeta.dat", header = T, sep='\t') #Read file
+df2<-read.delim("trainData.dat", header = T, sep='\t')
+```
+
