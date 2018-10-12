@@ -1,0 +1,112 @@
+---
+title: "Visualization Lab 6"
+author: "Roshni Sundaramurthy (rossu809) & Brian Masinde (brima748)"
+date: "04 October 2018"
+output:
+  html_document:
+    df_print: paged
+  html_notebook:
+    theme: journal
+  pdf_document: default
+fontsize: 11pt
+bibliography: references.bib
+---
+
+## Assignment 1. Network Visualization of terrorist connections
+
+```{r libs, message=FALSE, warning=FALSE, paged.print=FALSE}
+library(ggraph)
+library(igraph)
+library(visNetwork)
+library(htmlwidgets)
+```
+
+
+```{r data}
+#_______________________LINKS___________________________________________
+# connections between individuals (first two columns)
+# strength of ties linking them 1:4
+trainData <- read.table("trainData.dat")
+
+colnames(trainData) <- c("from","to","weight")
+
+trainData$width <- trainData$weight
+
+# convert cols to factors
+#trainData$from <- as.factor(trainData$from)
+
+#trainData$to <-as.factor(trainData$to)
+
+#trainData$tie_strength <- as.factor(trainData$tie_strength)
+
+#__________________NODES________________________________________________
+# 
+trainMeta <- read.table("trainMeta.dat")
+
+# rename columns
+colnames(trainMeta) <- c("person","bomb_group")
+
+# create an id column
+trainMeta$id <- 1:nrow(trainMeta)
+
+# convert part (participation) to factor
+trainMeta$bomb_group <- as.factor(trainMeta$bomb_group)
+
+# label column
+trainMeta$label = trainMeta$person
+```
+
+### 1.a
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+#_____________link order [from and to]________________________________
+trainData <- trainData[order(trainData$from, trainData$to),]
+
+#______________________NODE___________________________________________
+node <- data.frame(
+  id = trainMeta$id,
+  label = trainMeta$label,
+  group = trainMeta$bomb_group
+  #value =  strength(graph = g)
+)
+
+#____________________EDGES_____________________________________________
+
+edge <- data.frame(
+  from = trainData$from,
+  to = trainData$to,
+  weight = trainData$weight,
+  width = trainData$width
+)
+
+#________________________________GRAPH_______________________________
+# graph object use graph_from_data_frame(), id needs to be first
+
+g <- graph_from_data_frame(
+  d = edge,
+  vertices = node
+)
+
+#___________________________add value to node_____________________
+
+node$value <- strength(graph = g)
+
+graph_obj <- visNetwork(node, edge, width = "100%") %>%
+  visNodes(
+    shape = "circle"
+    #label = label
+    #value =  value
+  ) %>%
+  #visEdges(
+    #label = label,
+   # width = edge$width
+  #)%>%
+  visPhysics(
+    solver = "repulsion"
+  ) %>%
+  visLegend() %>% visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) 
+
+graph_obj
+#size <- strength(graph = graph_obj, vids = V(graph_obj))
+```
+
+
