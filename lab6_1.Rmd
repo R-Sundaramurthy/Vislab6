@@ -5,9 +5,10 @@ date: "04 October 2018"
 output:
   html_document:
     df_print: paged
-  html_notebook:
-    theme: journal
-  pdf_document: default
+    self_contained: no
+  #html_notebook:
+  #  theme: journal
+  #pdf_document: default
 fontsize: 11pt
 bibliography: references.bib
 ---
@@ -56,8 +57,8 @@ trainMeta$bomb_group <- as.factor(trainMeta$bomb_group)
 trainMeta$label = trainMeta$person
 ```
 
-### 1.a
-```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+### 1
+```{r message=FALSE, warning=FALSE, paged.print=FALSE, fig.width = 9 , fig.height =9}
 #_____________link order [from and to]________________________________
 trainData <- trainData[order(trainData$from, trainData$to),]
 
@@ -91,22 +92,27 @@ g <- graph_from_data_frame(
 node$value <- strength(graph = g)
 
 graph_obj <- visNetwork(node, edge, width = "100%") %>%
-  visNodes(
-    shape = "circle"
-    #label = label
-    #value =  value
-  ) %>%
-  #visEdges(
-    #label = label,
-   # width = edge$width
-  #)%>%
   visPhysics(
     solver = "repulsion"
   ) %>%
   visLegend() %>% visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) 
 
 graph_obj
-#size <- strength(graph = graph_obj, vids = V(graph_obj))
 ```
 
+From the network, we can observe three main clusters. The main cluster has **Jamal Zougam**, as center of the cluster. In particular, observing the size of the node that represents **Jamal Zougam**, he has the highest number of connections. Also a person of interest would be **Mohamed Chaoui**, as he has the second most largest connections. 
 
+The second cluster is comprised of a group that do not have any direct relationship to the bombing group. This cluster is comprised of ** Emilio Liamo**, ** Jose Emilio Suarez**, ** El Gitalino**, **Antonio Toro**, **Ivan Granados**, **Raul Gonzalez Perez**.
+
+There is a group of people who have no connection at all to anyone. Such people are: **Faisal Alluch**, **Sanel Sjekirika**,  and **Abdelhalak Bentasser**
+
+### 2.
+
+```{r qn2, fig.height = 9, fig.width =9}
+#_________________________Path length one or two_________________________________
+
+graph_obj %>%
+  visOptions(highlightNearest = list(enabled = TRUE, degree = 2), nodesIdSelection = TRUE)
+```
+
+Jamal Zougam and Mohamed Chaoui appear to have the same links with path lenght one or two. However, since the former has the largest connection (size of the representative node), he has best opportunity to spread information. From wikepedia, Jamal Zougam had a telephone shop and it was established that the phones from his store were used in the train bombings. It is a possiblity that he alos distributed phones in the network to enable communication.

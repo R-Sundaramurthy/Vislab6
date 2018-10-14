@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Roshni Sundaramurthy (rossu809) &amp; Brian Masinde (brima748)" />
+
+<meta name="date" content="2018-10-04" />
+
+<title>Visualization Lab 6</title>
+
+<script src="lab6_1_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="lab6_1_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="lab6_1_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="lab6_1_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="lab6_1_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="lab6_1_files/navigation-1.1/tabsets.js"></script>
+<link href="lab6_1_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="lab6_1_files/highlightjs-9.12.0/highlight.js"></script>
+<link href="lab6_1_files/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="lab6_1_files/pagedtable-1.1/js/pagedtable.js"></script>
+<script src="lab6_1_files/htmlwidgets-1.2/htmlwidgets.js"></script>
+<link href="lab6_1_files/vis-4.20.1/vis.css" rel="stylesheet" />
+<script src="lab6_1_files/vis-4.20.1/vis.min.js"></script>
+<script src="lab6_1_files/visNetwork-binding-2.0.4/visNetwork.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Visualization Lab 6</h1>
+<h4 class="author"><em>Roshni Sundaramurthy (rossu809) &amp; Brian Masinde (brima748)</em></h4>
+<h4 class="date"><em>04 October 2018</em></h4>
+
+</div>
+
+
+<div id="assignment-1.-network-visualization-of-terrorist-connections" class="section level2">
+<h2>Assignment 1. Network Visualization of terrorist connections</h2>
+<pre class="r"><code>library(ggraph)
+library(igraph)
+library(visNetwork)
+library(htmlwidgets)</code></pre>
+<pre class="r"><code>#_______________________LINKS___________________________________________
+# connections between individuals (first two columns)
+# strength of ties linking them 1:4
+trainData &lt;- read.table(&quot;trainData.dat&quot;)
+
+colnames(trainData) &lt;- c(&quot;from&quot;,&quot;to&quot;,&quot;weight&quot;)
+
+trainData$width &lt;- trainData$weight
+
+# convert cols to factors
+#trainData$from &lt;- as.factor(trainData$from)
+
+#trainData$to &lt;-as.factor(trainData$to)
+
+#trainData$tie_strength &lt;- as.factor(trainData$tie_strength)
+
+#__________________NODES________________________________________________
+# 
+trainMeta &lt;- read.table(&quot;trainMeta.dat&quot;)
+
+# rename columns
+colnames(trainMeta) &lt;- c(&quot;person&quot;,&quot;bomb_group&quot;)
+
+# create an id column
+trainMeta$id &lt;- 1:nrow(trainMeta)
+
+# convert part (participation) to factor
+trainMeta$bomb_group &lt;- as.factor(trainMeta$bomb_group)
+
+# label column
+trainMeta$label = trainMeta$person</code></pre>
+<div id="section" class="section level3">
+<h3>1</h3>
+<pre class="r"><code>#_____________link order [from and to]________________________________
+trainData &lt;- trainData[order(trainData$from, trainData$to),]
+
+#______________________NODE___________________________________________
+node &lt;- data.frame(
+  id = trainMeta$id,
+  label = trainMeta$label,
+  group = trainMeta$bomb_group
+  #value =  strength(graph = g)
+)
+
+#____________________EDGES_____________________________________________
+
+edge &lt;- data.frame(
+  from = trainData$from,
+  to = trainData$to,
+  weight = trainData$weight,
+  width = trainData$width
+)
+
+#________________________________GRAPH_______________________________
+# graph object use graph_from_data_frame(), id needs to be first
+
+g &lt;- graph_from_data_frame(
+  d = edge,
+  vertices = node
+)
+
+#___________________________add value to node_____________________
+
+node$value &lt;- strength(graph = g)
+
+graph_obj &lt;- visNetwork(node, edge, width = &quot;100%&quot;) %&gt;%
+  visPhysics(
+    solver = &quot;repulsion&quot;
+  ) %&gt;%
+  visLegend() %&gt;% visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) 
+
+graph_obj</code></pre>
+<div id="htmlwidget-49ac26ccb1050dc6512c" style="width:100%;height:864px;" class="visNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-49ac26ccb1050dc6512c">{"x":{"nodes":{"id":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70],"label":["Jamal Zougam ","Mohamed Bekkali","Mohamed Chaoui","Vinay Kholy","Suresh Kumar ","Mohamed Chedadi ","Imad Eddin Barakat","Abdelaziz Benyaich","Abu Abderrahame","Omar Dhegayes ","Amer Azizi","Abu Musad Alsakaoui","Mohamed Atta","Ramzi Binalshibh","Mohamed Belfatmi","Said Bahaji","Alí Amrous","Galeb Kalaje","Abderrahim Zbakh","Farid Oulad Ali","José Emilio Suárez ","Khalid Ouled Akcha ","Rafa Zuher","Naima Oulad Akcha","Abdelkarim el Mejjati","Abdelhalak Bentasser","Anwar Adnan Ahmad","Basel Ghayoun","Faisal Alluch","S B Abdelmajid Fakhet","Jamal Ahmidan","Said Ahmidan","Hamid Ahmidan","Mustafa Ahmidan","Antonio Toro ","Mohamed Oulad Akcha","Rachid Oulad Akcha","Mamoun Darkazanli","Fouad El Morabit Anghar","Abdeluahid Berrak","Said Berrak","Waanid Altaraki Almasri","Abddenabi Koujma","Otman El Gnaut","Abdelilah el Fouad","Mohamad Bard Ddin Akkab ","Abu Zubaidah","Sanel Sjekirika ","Parlindumgan Siregar","El Hemir","Anuar Asri Rifaat","Rachid Adli ","Ghasoub Al Albrash","Said Chedadi","Mohamed Bahaiah","Taysir Alouny","OM. Othman Abu Qutada","Shakur","Driss Chebli","Abdul Fatal","Mohamed El Egipcio","Nasredine Boushoa","Semaan Gaby Eid","Emilio Llamo","Ivan Granados ","Raul Gonzales Perez","El Gitanillo","Moutaz Almallah","Mohamed Almallah","Yousef Hichman"],"group":["1","0","1","0","0","1","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","1","0","1","1","0","0","0","0","1","1","0","1","0","1","0","1","0","0","0","0","0","0","0","1","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],"value":[86,4,68,20,20,14,70,14,8,6,54,20,24,28,38,34,0,42,30,12,16,10,6,32,16,0,8,22,0,24,28,6,24,10,10,10,10,8,4,24,38,2,2,20,2,0,0,0,2,8,2,2,2,4,10,14,18,22,4,4,28,2,22,12,12,12,12,4,4,4]},"edges":{"from":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,6,6,6,6,6,6,6,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,8,8,8,8,8,8,9,9,9,9,10,10,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,12,12,12,12,12,12,12,12,12,12,13,13,13,13,13,13,13,13,13,13,14,14,14,14,14,14,14,14,14,14,15,15,15,15,15,15,15,15,15,15,15,16,16,16,16,16,16,16,16,16,16,16,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,20,20,20,20,20,20,21,21,21,21,21,21,21,21,22,22,22,22,22,23,23,23,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,25,25,25,25,25,25,25,25,27,27,27,27,28,28,28,28,28,28,28,28,28,28,28,30,30,30,30,30,30,30,30,30,30,30,30,31,31,31,31,31,31,31,31,31,31,31,31,31,31,32,32,32,33,33,33,33,33,33,33,33,33,33,33,33,34,34,34,34,34,35,35,35,35,35,36,36,36,36,36,37,37,37,37,37,38,38,38,38,39,39,40,40,40,40,40,40,40,40,40,40,40,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,42,43,44,44,44,44,44,44,44,44,44,44,45,49,50,50,50,50,51,52,53,54,54,55,55,55,55,56,56,56,56,56,56,57,57,57,57,57,57,57,57,58,58,58,58,58,58,58,58,58,58,59,59,60,60,61,61,61,61,61,61,61,61,61,61,61,61,61,62,63,63,63,63,63,63,63,63,63,63,63,64,64,64,64,64,64,65,65,65,65,65,65,66,66,66,66,66,66,67,67,67,67,67,67,68,68,69,69,70,70],"to":[2,3,4,5,6,7,8,9,11,12,13,14,15,16,18,19,24,25,28,30,31,33,40,41,44,50,57,58,61,1,3,1,2,4,5,7,8,9,11,12,13,14,15,16,18,19,24,25,28,30,31,33,40,41,44,57,58,61,1,3,5,19,24,28,30,31,33,41,1,3,4,19,24,28,30,31,33,41,1,19,20,39,40,44,54,1,3,8,10,11,12,13,14,15,16,18,30,40,41,44,50,53,56,57,58,59,61,1,3,7,9,10,25,1,3,8,25,7,8,1,3,7,12,13,14,15,16,18,30,40,41,44,49,50,57,58,61,1,3,7,11,13,14,15,16,18,58,1,3,7,11,12,14,15,16,18,58,1,3,7,11,12,13,15,16,18,58,1,3,7,11,12,13,14,16,18,58,59,1,3,7,11,12,13,14,15,18,58,60,1,3,7,11,12,13,14,15,16,40,41,44,54,57,58,61,1,3,4,5,6,24,28,30,31,33,36,37,41,43,51,6,22,23,24,36,37,23,35,52,63,64,65,66,67,20,24,36,37,63,20,21,24,1,3,4,5,19,20,22,23,28,30,31,33,36,37,41,42,1,3,8,9,27,38,55,56,25,38,55,56,1,3,4,5,19,24,30,31,33,41,61,1,3,4,5,7,11,19,24,28,31,33,41,1,3,4,5,19,24,28,30,32,33,34,41,62,63,31,33,34,1,3,4,5,19,24,28,30,31,32,34,41,31,32,33,63,70,21,64,65,66,67,19,20,22,24,37,19,20,22,24,36,25,27,55,56,6,61,1,3,6,7,11,18,41,44,57,61,63,1,3,4,5,7,11,18,19,24,28,30,31,33,40,44,57,61,24,19,1,3,6,7,11,18,40,41,57,61,63,11,1,7,11,61,19,21,7,6,18,25,27,38,56,7,25,27,38,55,60,1,3,7,11,18,40,41,44,1,3,7,11,12,13,14,15,16,18,7,15,16,56,1,3,7,11,18,28,39,40,41,44,50,68,69,31,21,22,31,34,40,45,64,65,66,67,70,21,35,63,65,66,67,21,35,63,64,66,67,21,35,63,64,65,67,21,35,63,64,65,66,61,69,61,68,34,63],"weight":[1,3,1,1,1,4,1,1,4,1,1,2,2,2,2,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,3,1,1,1,3,1,1,2,1,1,1,1,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,3,1,1,3,1,1,1,2,2,3,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,2,1,1,1,1,1,1,2,4,2,3,1,1,1,2,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,1,1,2,1,1,1,1,1,3,2,1,1,2,1,2,2,1,2,3,3,1,1,1,2,1,2,1,1,2,2,3,1,1,1,2,2,3,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,2,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"width":[1,3,1,1,1,4,1,1,4,1,1,2,2,2,2,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,3,1,1,1,3,1,1,2,1,1,1,1,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,3,1,1,3,1,1,1,2,2,3,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,2,1,1,1,1,1,1,2,4,2,3,1,1,1,2,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,1,1,2,1,1,1,1,1,3,2,1,1,2,1,2,2,1,2,3,3,1,1,1,2,1,2,1,1,2,2,3,1,1,1,2,2,3,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,2,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false},"physics":{"solver":"repulsion"}},"groups":["1","0"],"width":"100%","height":null,"idselection":{"enabled":true,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)"},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","legend":{"width":0.2,"useGroups":true,"position":"left","ncol":1,"stepX":100,"stepY":100,"zoom":true},"highlight":{"enabled":true,"hoverNearest":false,"degree":1,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":false,"fit":false,"resetHighlight":true,"clusterOptions":null}},"evals":[],"jsHooks":[]}</script>
+<p>From the network, we can observe three main clusters. The main cluster has <strong>Jamal Zougam</strong>, as center of the cluster. In particular, observing the size of the node that represents <strong>Jamal Zougam</strong>, he has the highest number of connections. Also a person of interest would be <strong>Mohamed Chaoui</strong>, as he has the second most largest connections.</p>
+<p>The second cluster is comprised of a group that do not have any direct relationship to the bombing group. This cluster is comprised of ** Emilio Liamo<strong>, </strong> Jose Emilio Suarez<strong>, </strong> El Gitalino<strong>, </strong>Antonio Toro<strong>, </strong>Ivan Granados<strong>, </strong>Raul Gonzalez Perez**.</p>
+<p>There is a group of people who have no connection at all to anyone. Such people are: <strong>Faisal Alluch</strong>, <strong>Sanel Sjekirika</strong>, and <strong>Abdelhalak Bentasser</strong></p>
+</div>
+<div id="section-1" class="section level3">
+<h3>2.</h3>
+<pre class="r"><code>#_________________________Path length one or two_________________________________
+
+graph_obj %&gt;%
+  visOptions(highlightNearest = list(enabled = TRUE, degree = 2), nodesIdSelection = TRUE)</code></pre>
+<div id="htmlwidget-fe6127acbe45dd416f8e" style="width:100%;height:864px;" class="visNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-fe6127acbe45dd416f8e">{"x":{"nodes":{"id":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70],"label":["Jamal Zougam ","Mohamed Bekkali","Mohamed Chaoui","Vinay Kholy","Suresh Kumar ","Mohamed Chedadi ","Imad Eddin Barakat","Abdelaziz Benyaich","Abu Abderrahame","Omar Dhegayes ","Amer Azizi","Abu Musad Alsakaoui","Mohamed Atta","Ramzi Binalshibh","Mohamed Belfatmi","Said Bahaji","Alí Amrous","Galeb Kalaje","Abderrahim Zbakh","Farid Oulad Ali","José Emilio Suárez ","Khalid Ouled Akcha ","Rafa Zuher","Naima Oulad Akcha","Abdelkarim el Mejjati","Abdelhalak Bentasser","Anwar Adnan Ahmad","Basel Ghayoun","Faisal Alluch","S B Abdelmajid Fakhet","Jamal Ahmidan","Said Ahmidan","Hamid Ahmidan","Mustafa Ahmidan","Antonio Toro ","Mohamed Oulad Akcha","Rachid Oulad Akcha","Mamoun Darkazanli","Fouad El Morabit Anghar","Abdeluahid Berrak","Said Berrak","Waanid Altaraki Almasri","Abddenabi Koujma","Otman El Gnaut","Abdelilah el Fouad","Mohamad Bard Ddin Akkab ","Abu Zubaidah","Sanel Sjekirika ","Parlindumgan Siregar","El Hemir","Anuar Asri Rifaat","Rachid Adli ","Ghasoub Al Albrash","Said Chedadi","Mohamed Bahaiah","Taysir Alouny","OM. Othman Abu Qutada","Shakur","Driss Chebli","Abdul Fatal","Mohamed El Egipcio","Nasredine Boushoa","Semaan Gaby Eid","Emilio Llamo","Ivan Granados ","Raul Gonzales Perez","El Gitanillo","Moutaz Almallah","Mohamed Almallah","Yousef Hichman"],"group":["1","0","1","0","0","1","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","1","0","1","1","0","0","0","0","1","1","0","1","0","1","0","1","0","0","0","0","0","0","0","1","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],"value":[86,4,68,20,20,14,70,14,8,6,54,20,24,28,38,34,0,42,30,12,16,10,6,32,16,0,8,22,0,24,28,6,24,10,10,10,10,8,4,24,38,2,2,20,2,0,0,0,2,8,2,2,2,4,10,14,18,22,4,4,28,2,22,12,12,12,12,4,4,4]},"edges":{"from":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,6,6,6,6,6,6,6,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,8,8,8,8,8,8,9,9,9,9,10,10,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,12,12,12,12,12,12,12,12,12,12,13,13,13,13,13,13,13,13,13,13,14,14,14,14,14,14,14,14,14,14,15,15,15,15,15,15,15,15,15,15,15,16,16,16,16,16,16,16,16,16,16,16,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,20,20,20,20,20,20,21,21,21,21,21,21,21,21,22,22,22,22,22,23,23,23,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,25,25,25,25,25,25,25,25,27,27,27,27,28,28,28,28,28,28,28,28,28,28,28,30,30,30,30,30,30,30,30,30,30,30,30,31,31,31,31,31,31,31,31,31,31,31,31,31,31,32,32,32,33,33,33,33,33,33,33,33,33,33,33,33,34,34,34,34,34,35,35,35,35,35,36,36,36,36,36,37,37,37,37,37,38,38,38,38,39,39,40,40,40,40,40,40,40,40,40,40,40,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,42,43,44,44,44,44,44,44,44,44,44,44,45,49,50,50,50,50,51,52,53,54,54,55,55,55,55,56,56,56,56,56,56,57,57,57,57,57,57,57,57,58,58,58,58,58,58,58,58,58,58,59,59,60,60,61,61,61,61,61,61,61,61,61,61,61,61,61,62,63,63,63,63,63,63,63,63,63,63,63,64,64,64,64,64,64,65,65,65,65,65,65,66,66,66,66,66,66,67,67,67,67,67,67,68,68,69,69,70,70],"to":[2,3,4,5,6,7,8,9,11,12,13,14,15,16,18,19,24,25,28,30,31,33,40,41,44,50,57,58,61,1,3,1,2,4,5,7,8,9,11,12,13,14,15,16,18,19,24,25,28,30,31,33,40,41,44,57,58,61,1,3,5,19,24,28,30,31,33,41,1,3,4,19,24,28,30,31,33,41,1,19,20,39,40,44,54,1,3,8,10,11,12,13,14,15,16,18,30,40,41,44,50,53,56,57,58,59,61,1,3,7,9,10,25,1,3,8,25,7,8,1,3,7,12,13,14,15,16,18,30,40,41,44,49,50,57,58,61,1,3,7,11,13,14,15,16,18,58,1,3,7,11,12,14,15,16,18,58,1,3,7,11,12,13,15,16,18,58,1,3,7,11,12,13,14,16,18,58,59,1,3,7,11,12,13,14,15,18,58,60,1,3,7,11,12,13,14,15,16,40,41,44,54,57,58,61,1,3,4,5,6,24,28,30,31,33,36,37,41,43,51,6,22,23,24,36,37,23,35,52,63,64,65,66,67,20,24,36,37,63,20,21,24,1,3,4,5,19,20,22,23,28,30,31,33,36,37,41,42,1,3,8,9,27,38,55,56,25,38,55,56,1,3,4,5,19,24,30,31,33,41,61,1,3,4,5,7,11,19,24,28,31,33,41,1,3,4,5,19,24,28,30,32,33,34,41,62,63,31,33,34,1,3,4,5,19,24,28,30,31,32,34,41,31,32,33,63,70,21,64,65,66,67,19,20,22,24,37,19,20,22,24,36,25,27,55,56,6,61,1,3,6,7,11,18,41,44,57,61,63,1,3,4,5,7,11,18,19,24,28,30,31,33,40,44,57,61,24,19,1,3,6,7,11,18,40,41,57,61,63,11,1,7,11,61,19,21,7,6,18,25,27,38,56,7,25,27,38,55,60,1,3,7,11,18,40,41,44,1,3,7,11,12,13,14,15,16,18,7,15,16,56,1,3,7,11,18,28,39,40,41,44,50,68,69,31,21,22,31,34,40,45,64,65,66,67,70,21,35,63,65,66,67,21,35,63,64,66,67,21,35,63,64,65,67,21,35,63,64,65,66,61,69,61,68,34,63],"weight":[1,3,1,1,1,4,1,1,4,1,1,2,2,2,2,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,3,1,1,1,3,1,1,2,1,1,1,1,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,3,1,1,3,1,1,1,2,2,3,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,2,1,1,1,1,1,1,2,4,2,3,1,1,1,2,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,1,1,2,1,1,1,1,1,3,2,1,1,2,1,2,2,1,2,3,3,1,1,1,2,1,2,1,1,2,2,3,1,1,1,2,2,3,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,2,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"width":[1,3,1,1,1,4,1,1,4,1,1,2,2,2,2,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,3,1,1,1,3,1,1,2,1,1,1,1,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,3,1,1,3,1,1,1,2,2,3,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,2,1,1,1,1,1,1,2,4,2,3,1,1,1,2,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,1,1,2,1,1,1,1,1,3,2,1,1,2,1,2,2,1,2,3,3,1,1,1,2,1,2,1,1,2,2,3,1,1,1,2,2,3,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,2,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false},"physics":{"solver":"repulsion"}},"groups":["1","0"],"width":"100%","height":null,"idselection":{"enabled":true,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)"},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","legend":{"width":0.2,"useGroups":true,"position":"left","ncol":1,"stepX":100,"stepY":100,"zoom":true},"highlight":{"enabled":true,"hoverNearest":false,"degree":2,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":false,"fit":false,"resetHighlight":true,"clusterOptions":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
