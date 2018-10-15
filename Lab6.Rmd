@@ -1,7 +1,7 @@
 ---
 title: "Visualization Lab 6"
 author: "Roshni Sundaramurthy (rossu809) & Brian Masinde (brima748)"
-date: "12 October 2018"
+date: "15 October 2018"
 output:
   html_document:
     df_print: paged
@@ -16,7 +16,7 @@ fontsize: 11pt
 library(ggplot2)
 library(plotly)
 library(visNetwork)
-library(dplyr)
+library(tidyr)
 ```
 
 ## Assignment 1
@@ -25,6 +25,78 @@ library(dplyr)
 
 ```{r echo=FALSE}
 df1<-read.delim("trainMeta.dat", header = T, sep='\t') #Read file
+
 df2<-read.delim("trainData.dat", header = T, sep='\t')
+```
+
+## Assignment 2
+
+### 2.1 Bubble chart (animated)
+
+```{r}
+oilcoal <- read.csv("Oilcoal.csv", sep = ";", dec = ",", header = TRUE, row.names = NULL)
+
+oilcoal %>% plot_ly(x = ~Oil, y =~Coal, frame=~Year, text = ~Country, 
+    hoverinfo = "text", type = 'scatter', mode = 'markers', size = ~Marker.size) %>%
+    animation_opts(200, easing = "cubic", redraw = F) %>% add_markers(color=~Country) %>% 
+    layout(title="Consumption of Oil and Coal by Countries")
+
+```
+
+### 2.2 Motion chart for France and Germany
+
+```{r}
+
+oilcoal %>% filter(Country==c("France","Germany"))%>%
+    plot_ly(x = ~Oil, y =~Coal, frame=~Year, text = ~Country, 
+    hoverinfo = "text", type = 'scatter', mode = 'markers', size = ~Marker.size) %>%
+    animation_opts(200, easing = "cubic", redraw = F) %>% add_markers(color=~Country) %>% 
+    layout(title="Consumption of Oil and Coal by France and Germany")
+
+```
+
+### 2.3 Line plot of Oilp Vs Country
+
+```{r}
+Oilp <- oilcoal %>% group_by(Year, Country) %>% mutate(oilp=Oil/(Oil+Coal))
+Oilp_0 <- oilcoal %>% group_by(Year, Country) %>% mutate(oilp=0)
+rbind(Oilp, Oilp_0) %>% 
+plot_ly(x = ~oilp, y =~Country, frame=~Year, text = ~Country, 
+    hoverinfo = "text", type = 'scatter', mode = 'line', size = ~Marker.size) %>%
+    animation_opts(200, easing = "cubic", redraw = F) #%>% add_lines(color=~Country)
+
+```
+
+### 2.4 Line plot with elastic easing
+
+```{r}
+rbind(Oilp, Oilp_0) %>% 
+plot_ly(x = ~oilp, y =~Country, frame=~Year, text = ~Country, 
+    hoverinfo = "text", type = 'scatter', mode = 'line', size = ~Marker.size) %>%
+    animation_opts(200, easing = "elastic", redraw = F) #%>% add_lines(color=~Country)
+```
+
+### 2.5 Guided 2D-tour visualizing coal consumption
+
+```{r}
+#A modified code from plotly's website
+## Modify for this dataset
+library(tourr)
+library(plotly)
+
+mat <- rescale(mtcars[,c(3:5)])
+set.seed(12345)
+tour <- new_tour(mat, grand_tour(), NULL)
+
+steps <- c(0, rep(1/15, 200))
+Projs<-lapply(steps, function(step_size){  
+  step <- tour(step_size)
+  if(is.null(step)) {
+    .GlobalEnv$tour<- new_tour(oilcoal, guided_tour(cmass), NULL)
+    step <- tour(step_size)
+  }
+  step
+}
+)
 ```
 
