@@ -33,7 +33,7 @@ df2<-read.delim("trainData.dat", header = T, sep='\t')
 
 ### 2.1 Bubble chart (animated)
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 oilcoal <- read.csv("Oilcoal.csv", sep = ";", dec = ",", header = TRUE, row.names = NULL)
 
 oilcoal %>% plot_ly(x = ~Oil, y =~Coal, frame=~Year, text = ~Country, 
@@ -45,7 +45,7 @@ oilcoal %>% plot_ly(x = ~Oil, y =~Coal, frame=~Year, text = ~Country,
 
 ### 2.2 Motion chart for France and Germany
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 
 oilcoal %>% filter(Country==c("France","Germany"))%>%
     plot_ly(x = ~Oil, y =~Coal, frame=~Year, text = ~Country, 
@@ -57,7 +57,7 @@ oilcoal %>% filter(Country==c("France","Germany"))%>%
 
 ### 2.3 Line plot of Oilp Vs Country
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 Oilp <- oilcoal %>% group_by(Year, Country) %>% mutate(oilp=Oil/(Oil+Coal))
 Oilp_0 <- oilcoal %>% group_by(Year, Country) %>% mutate(oilp=0)
 rbind(Oilp, Oilp_0) %>% 
@@ -69,7 +69,7 @@ plot_ly(x = ~oilp, y =~Country, frame=~Year, text = ~Country,
 
 ### 2.4 Line plot with elastic easing
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 rbind(Oilp, Oilp_0) %>% 
 plot_ly(x = ~oilp, y =~Country, frame=~Year, text = ~Country, 
     hoverinfo = "text", type = 'scatter', mode = 'line', size = ~Marker.size) %>%
