@@ -20,6 +20,8 @@ library(ggraph)
 library(igraph)
 library(visNetwork)
 library(htmlwidgets)
+library(seriation)
+library(plotly)
 ```
 
 
@@ -115,4 +117,65 @@ graph_obj %>%
   visOptions(highlightNearest = list(enabled = TRUE, degree = 2), nodesIdSelection = TRUE)
 ```
 
-Jamal Zougam and Mohamed Chaoui appear to have the same links with path lenght one or two. However, since the former has the largest connection (size of the representative node), he has best opportunity to spread information. From wikepedia, Jamal Zougam had a telephone shop and it was established that the phones from his store were used in the train bombings. It is a possiblity that he alos distributed phones in the network to enable communication.
+Jamal Zougam and Mohamed Chaoui appear to have the same links with path lenght one or two. However, since the former has the largest connection (size of the representative node), he has best opportunity to spread information. From wikepedia, Jamal Zougam had a telephone shop and it was established that the phones from his store were used in the train bombings. It is a possiblity that he also distributed phones in the network to facilitate communication.
+
+### 3.
+
+```{r qn3}
+#___________________________________Clusters_________________________________________
+
+# make a copy of nodes, no need to overwrite it
+nodes1<-node
+
+# a graph object
+net <- graph_from_data_frame(d=edge, vertices=node, directed=F)
+
+# cluster
+ceb <- cluster_edge_betweenness(net)
+
+# a group variable from edge betweenness score (number of shortest paths through it)
+
+nodes1$group=ceb$membership
+
+visNetwork(nodes1,edge)%>%
+  visIgraphLayout()
+```
+
+The clustering method by calculating edge betweenness score identifies all the clusters we were able to identify. **Jamal Zougam** is a hub in this graph too. We note that there are more clusters than we would have been able to identify observation. Due to the coloring in this output there are 7 clusters.
+
+### 4.
+
+```{r}
+#________________________________________ Permutation by HC____________________________________________
+
+# adjacency representation
+
+netm <- get.adjacency(net, attr="weight", sparse=F)
+
+# colnames
+colnames(netm) <- V(net)$label
+
+#rownames
+rownames(netm) <- V(net)$label
+
+# calculate distances
+rowdist<-dist(netm)
+
+# get order
+
+#set seed
+
+set.seed(111)
+order1<-seriate(rowdist, "HC")
+
+ord1<-get_order(order1)
+
+reordmatr<-netm[ord1,ord1]
+
+plot_ly(z=~reordmatr, x=~colnames(reordmatr), 
+        y=~rownames(reordmatr), type="heatmap")
+```
+
+The most pronounced cluster would be at the bottom left coner of the heatmap. The persons in this cluster have ties to
+Al Qaeda, and to Osama Bin Laden. Example of such people are: Suresh Kumar, Vinay Kholy, and Basel Ghayoun among others. This cluster was identified in Step 3 as the nodes colored red. In step 1 this cluster is not easily identified because we have to observe the thickness of the edges and the links.
+
