@@ -150,7 +150,7 @@ The clustering method by calculating edge betweenness score identifies all the c
 ### 4.
 
 ```{r}
-#_______ Permutation byHC____________________________________________
+#_______ Permutation by HC____________________________________________
 
 # adjacency representation
 
