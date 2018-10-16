@@ -146,9 +146,10 @@ The clustering method by calculating edge betweenness score identifies all the c
 ### 4.
 
 ```{r}
-#________________________________________ Permutation by HC____________________________________________
+#_______ Permutation byHC____________________________________________
 
 # adjacency representation
+
 
 netm <- get.adjacency(net, attr="weight", sparse=F)
 

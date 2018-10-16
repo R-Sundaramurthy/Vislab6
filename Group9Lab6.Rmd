@@ -1,34 +1,189 @@
 ---
 title: "Visualization Lab 6"
 author: "Roshni Sundaramurthy (rossu809) & Brian Masinde (brima748)"
-date: "15 October 2018"
+date: "04 October 2018"
 output:
   html_document:
     df_print: paged
-  html_notebook:
-    theme: journal
-  pdf_document: default
+    self_contained: no
+  #html_notebook:
+  #  theme: journal
+  #pdf_document: default
 fontsize: 11pt
-#bibliography: references.bib
+bibliography: references.bib
 ---
 
-```{r libraries, message=FALSE, warning=FALSE, echo=FALSE}
-library(ggplot2)
-library(plotly)
+## Assignment 1. Network Visualization of terrorist connections
+
+```{r libs, message=FALSE, warning=FALSE, paged.print=FALSE}
+#__________________________________Libraries_________________________
+library(ggraph)
+library(igraph)
 library(visNetwork)
+library(htmlwidgets)
+library(seriation)
+library(plotly)
 library(tidyr)
 library(tourr)
+library(ggplot2)
+library(seriation)
 ```
 
-## Assignment 1
+```{r data}
+#_______________________LINKS___________________________________________
+# connections between individuals (first two columns)
+# strength of ties linking them 1:4
+trainData <- read.table("trainData.dat")
 
-### 1.1 Plot the network
+colnames(trainData) <- c("from","to","weight")
 
-```{r echo=FALSE}
-df1<-read.delim("trainMeta.dat", header = T, sep='\t') #Read file
+trainData$width <- trainData$weight
 
-df2<-read.delim("trainData.dat", header = T, sep='\t')
+# convert cols to factors
+#trainData$from <- as.factor(trainData$from)
+
+#trainData$to <-as.factor(trainData$to)
+
+#trainData$tie_strength <- as.factor(trainData$tie_strength)
+
+#__________________NODES________________________________________________
+# 
+trainMeta <- read.table("trainMeta.dat")
+
+# rename columns
+colnames(trainMeta) <- c("person","bomb_group")
+
+# create an id column
+trainMeta$id <- 1:nrow(trainMeta)
+
+# convert part (participation) to factor
+trainMeta$bomb_group <- as.factor(trainMeta$bomb_group)
+
+# label column
+trainMeta$label = trainMeta$person
 ```
+
+### 1
+```{r message=FALSE, warning=FALSE, paged.print=FALSE, fig.width = 9 , fig.height =9}
+#_____________link order [from and to]________________________________
+trainData <- trainData[order(trainData$from, trainData$to),]
+
+#______________________NODE___________________________________________
+node <- data.frame(
+  id = trainMeta$id,
+  label = trainMeta$label,
+  group = trainMeta$bomb_group
+  #value =  strength(graph = g)
+)
+
+#____________________EDGES_____________________________________________
+
+edge <- data.frame(
+  from = trainData$from,
+  to = trainData$to,
+  weight = trainData$weight,
+  width = trainData$width
+)
+
+#________________________________GRAPH_______________________________
+# graph object use graph_from_data_frame(), id needs to be first
+
+g <- graph_from_data_frame(
+  d = edge,
+  vertices = node
+)
+
+#___________________________add value to node_____________________
+
+node$value <- strength(graph = g)
+
+graph_obj <- visNetwork(node, edge, width = "100%") %>%
+  visPhysics(
+    solver = "repulsion"
+  ) %>%
+  visLegend() %>% visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) 
+
+graph_obj
+```
+
+From the network, we can observe three main clusters. The main cluster has **Jamal Zougam**, as center of the cluster. In particular, observing the size of the node that represents **Jamal Zougam**, he has the highest number of connections. Also a person of interest would be **Mohamed Chaoui**, as he has the second most largest connections. 
+
+The second cluster is comprised of a group that do not have any direct relationship to the bombing group. This cluster is comprised of **Emilio Liamo**, **Jose Emilio Suarez**, **El Gitalino**, **Antonio Toro**, **Ivan Granados**, **Raul Gonzalez Perez**.
+
+There is a group of people who have no connection at all to anyone. Such people are: **Faisal Alluch**, **Sanel Sjekirika**,  and **Abdelhalak Bentasser**
+
+### 2.
+
+```{r qn2, fig.height = 9, fig.width =9}
+#_________________________Path length one or two_________________________________
+
+graph_obj %>%
+  visOptions(highlightNearest = list(enabled = TRUE, degree = 2), nodesIdSelection = TRUE)
+```
+
+Jamal Zougam and Mohamed Chaoui appear to have the same links with path lenght one or two. However, since the former has the largest connection (size of the representative node), he has best opportunity to spread information. From wikepedia, Jamal Zougam had a telephone shop and it was established that the phones from his store were used in the train bombings. It is a possiblity that he also distributed phones in the network to facilitate communication.
+
+### 3.
+
+```{r qn3}
+#___________________________________Clusters_________________________________________
+
+# make a copy of nodes, no need to overwrite it
+nodes1<-node
+
+# a graph object
+net <- graph_from_data_frame(d=edge, vertices=node, directed=F)
+
+# cluster
+ceb <- cluster_edge_betweenness(net)
+
+# a group variable from edge betweenness score (number of shortest paths through it)
+
+nodes1$group=ceb$membership
+
+visNetwork(nodes1,edge)%>%
+  visIgraphLayout()
+```
+
+The clustering method by calculating edge betweenness score identifies all the clusters we were able to identify. **Jamal Zougam** is a hub in this graph too. We note that there are more clusters than we would have been able to identify observation. Due to the coloring in this output there are 7 clusters.
+
+### 4.
+
+```{r}
+#_______ Permutation byHC____________________________________________
+
+# adjacency representation
+
+
+netm <- get.adjacency(net, attr="weight", sparse=F)
+
+# colnames
+colnames(netm) <- V(net)$label
+
+#rownames
+rownames(netm) <- V(net)$label
+
+# calculate distances
+rowdist<-dist(netm)
+
+# get order
+
+#set seed
+
+set.seed(111)
+order1<-seriate(rowdist, "HC")
+
+ord1<-get_order(order1)
+
+reordmatr<-netm[ord1,ord1]
+
+plot_ly(z=~reordmatr, x=~colnames(reordmatr), 
+        y=~rownames(reordmatr), type="heatmap")
+```
+
+
+The most pronounced cluster would be at the bottom left coner of the heatmap. The persons in this cluster have ties to
+Al Qaeda, and to Osama Bin Laden. Example of such people are: Suresh Kumar, Vinay Kholy, and Basel Ghayoun among others. This cluster was identified in Step 3 as the nodes colored red. In step 1 this cluster is not easily identified because we have to observe the thickness of the edges and the links.
 
 ## Assignment 2
 
@@ -49,6 +204,7 @@ oilcoal %>% plot_ly(x = ~Oil, y =~Coal, frame=~Year, text = ~Country,
 ### 2.2 Motion chart for France and Germany
 
 From the avove bubble chart, it seems France and Germany had similar motion patterns. Consumption of coal by France reduced gradually because of nuclear power. France's present electricity generation mix is a result of the French government deciding in 1974, just after the first oil shock, to expand rapidly the country's nuclear power capacity, using Westinghouse technology. About 75% of electricity is from nuclear energy and 17% of France's electricity is from recycled nuclear fuel. It seems after 1990, Germany's coal and oil consumption gets decreased. In 1990, the German reunification happened (east and west Germany united). The sale of oil, previously an important source of hard currency, became less profitable due to changes in the world economy.
+
 ```{r message=FALSE, warning=FALSE}
 
 oilcoal %>% filter(Country==c("France","Germany"))%>%
@@ -66,6 +222,7 @@ Advantage:
 A quick analysis can be done using the animated line plot when compared to bubble chart. It clearly shows the rise or fall of data points. The changes can easily be tracked over time.
 Disadvantage: 
 It's not visually appealing and not suitable for large range of data.
+
 ```{r message=FALSE, warning=FALSE}
 Oilp <- oilcoal %>% group_by(Year, Country) %>% mutate(oilp=Oil/(Oil+Coal))
 Oilp_0 <- oilcoal %>% group_by(Year, Country) %>% mutate(oilp=0)
@@ -92,75 +249,7 @@ plot_ly(x = ~oilp, y =~Country, frame=~Year, text = ~Country,
 
 ### 2.5 Guided 2D-tour visualizing coal consumption
 
-```{r message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
-tour_df <- read.csv2("Oilcoal.csv", sep = ";")
-tour_df<- tour_df[,1:5]
-
-mat <- rescale(tour_df[,2:5])
-rownames(mat) <- tour_df[,1]
-
-set.seed(12345)
-#tour <- new_tour(mat, grand_tour(), NULL)
-tour<- new_tour(mat, guided_tour(cmass), NULL)
-
-steps <- c(0, rep(1/15, 200))
-Projs<-lapply(steps, function(step_size){  
-  step <- tour(step_size)
-  if(is.null(step)) {
-    .GlobalEnv$tour<- new_tour(mat, guided_tour(cmass), NULL)
-    step <- tour(step_size)
-  }
-  step
-}
-)
-
-# projection of each observation
-tour_dat <- function(i) {
-  step <- Projs[[i]]
-  proj <- center(mat %*% step$proj)
-  data.frame(x = proj[,1], y = proj[,2], state = rownames(mat))
-}
-
-# projection of each variable's axis
-proj_dat <- function(i) {
-  step <- Projs[[i]]
-  data.frame(
-    x = step$proj[,1], y = step$proj[,2], variable = colnames(mat)
-  )
-}
-
-stepz <- cumsum(steps)
-
-# tidy version of tour data
-
-tour_dats <- lapply(1:length(steps), tour_dat)
-tour_datz <- Map(function(x, y) cbind(x, step = y), tour_dats, stepz)
-tour_dat <- dplyr::bind_rows(tour_datz)
-
-# tidy version of tour projection data
-proj_dats <- lapply(1:length(steps), proj_dat)
-proj_datz <- Map(function(x, y) cbind(x, step = y), proj_dats, stepz)
-proj_dat <- dplyr::bind_rows(proj_datz)
-
-ax <- list(
-  title = "", showticklabels = FALSE,
-  zeroline = FALSE, showgrid = FALSE,
-  range = c(-1.1, 1.1)
-)
-
-# for nicely formatted slider labels
-options(digits = 3)
-tour_dat <- highlight_key(tour_dat, ~state, group = "A")
-twoD_tour <- proj_dat %>%
-  plot_ly(x = ~x, y = ~y, frame = ~step, color = I("black")) %>%
-  add_segments(xend = 0, yend = 0, color = I("gray80")) %>%
-  add_text(text = ~variable) %>%
-  add_markers(data = tour_dat, text = ~state, ids = ~state, hoverinfo = "text") %>%
-  layout(xaxis = ax, yaxis = ax)%>%animation_opts(frame=0, transition=0, redraw = F)
-twoD_tour
-```
-
-```{r data}
+```{r data2}
 tour_df <- read.csv2("Oilcoal.csv", sep = ";")
 tour_df<- tour_df[,1:5]
 
@@ -202,6 +291,7 @@ proj_dat <- function(i) {
 }
 ```
 
+
 ```{r}
 stepz <- cumsum(steps)
 
@@ -235,4 +325,3 @@ twoD_tour <- proj_dat %>%
   layout(xaxis = ax, yaxis = ax)%>%animation_opts(frame=0, transition=0, redraw = F)
 twoD_tour
 ```
-

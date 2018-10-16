@@ -11,7 +11,7 @@
 
 <meta name="author" content="Roshni Sundaramurthy (rossu809) &amp; Brian Masinde (brima748)" />
 
-<meta name="date" content="2018-10-12" />
+<meta name="date" content="2018-10-15" />
 
 <title>Visualization Lab 6</title>
 
@@ -174,7 +174,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Visualization Lab 6</h1>
 <h4 class="author"><em>Roshni Sundaramurthy (rossu809) &amp; Brian Masinde (brima748)</em></h4>
-<h4 class="date"><em>12 October 2018</em></h4>
+<h4 class="date"><em>15 October 2018</em></h4>
 
 </div>
 
@@ -192,11 +192,177 @@ $(document).ready(function () {
 <!-- rnb-chunk-begin -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+</div>
+</div>
+<div id="assignment-2" class="section level2">
+<h2>Assignment 2</h2>
+<div id="bubble-chart-animated" class="section level3">
+<h3>2.1 Bubble chart (animated)</h3>
+<p>From bubble size, China and US seems larger consumption of oil and coal when compared to other countries. Till 2001, consumption of coal by China is gradually increased. After 2001, it is rapidly increasing. Till 1979, US exhibits more consumption of oil, after that a gradual increase in coal consumption can be seen along with oil. UK is the least consumer of oil and coal in this case. Consumption of oil by France and Brazil is less without using coal. India has the gradual increase in consuming both over years.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxub2lsY29hbCA8LSByZWFkLmNzdihcIk9pbGNvYWwuY3N2XCIsIHNlcCA9IFwiO1wiLCBkZWMgPSBcIixcIiwgaGVhZGVyID0gVFJVRSwgcm93Lm5hbWVzID0gTlVMTClcblxub2lsY29hbCAlPiUgcGxvdF9seSh4ID0gfk9pbCwgeSA9fkNvYWwsIGZyYW1lPX5ZZWFyLCB0ZXh0ID0gfkNvdW50cnksIFxuICAgIGhvdmVyaW5mbyA9IFwidGV4dFwiLCB0eXBlID0gJ3NjYXR0ZXInLCBtb2RlID0gJ21hcmtlcnMnLCBzaXplID0gfk1hcmtlci5zaXplKSAlPiVcbiAgICBhbmltYXRpb25fb3B0cygyMDAsIGVhc2luZyA9IFwiY2lyY2xlXCIsIHJlZHJhdyA9IEYpICU+JSBhZGRfbWFya2Vycyhjb2xvcj1+Q291bnRyeSkgJT4lIFxuICAgIGxheW91dCh0aXRsZT1cIkNvbnN1bXB0aW9uIG9mIE9pbCBhbmQgQ29hbCBieSBDb3VudHJpZXNcIilcblxuYGBgIn0= -->
+<pre class="r"><code>oilcoal &lt;- read.csv(&quot;Oilcoal.csv&quot;, sep = &quot;;&quot;, dec = &quot;,&quot;, header = TRUE, row.names = NULL)
+
+oilcoal %&gt;% plot_ly(x = ~Oil, y =~Coal, frame=~Year, text = ~Country, 
+    hoverinfo = &quot;text&quot;, type = 'scatter', mode = 'markers', size = ~Marker.size) %&gt;%
+    animation_opts(200, easing = &quot;circle&quot;, redraw = F) %&gt;% add_markers(color=~Country) %&gt;% 
+    layout(title=&quot;Consumption of Oil and Coal by Countries&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="motion-chart-for-france-and-germany" class="section level3">
+<h3>2.2 Motion chart for France and Germany</h3>
+<p>From the avove bubble chart, it seems France and Germany had similar motion patterns. Consumption of coal by France reduced gradually because of nuclear power. France’s present electricity generation mix is a result of the French government deciding in 1974, just after the first oil shock, to expand rapidly the country’s nuclear power capacity, using Westinghouse technology. About 75% of electricity is from nuclear energy and 17% of France’s electricity is from recycled nuclear fuel. It seems after 1990, Germany’s coal and oil consumption gets decreased. In 1990, the German reunification happened (east and west Germany united). The sale of oil, previously an important source of hard currency, became less profitable due to changes in the world economy.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5vaWxjb2FsICU+JSBmaWx0ZXIoQ291bnRyeT09YyhcIkZyYW5jZVwiLFwiR2VybWFueVwiKSklPiVcbiAgICBwbG90X2x5KHggPSB+T2lsLCB5ID1+Q29hbCwgZnJhbWU9flllYXIsIHRleHQgPSB+Q291bnRyeSwgXG4gICAgaG92ZXJpbmZvID0gXCJ0ZXh0XCIsIHR5cGUgPSAnc2NhdHRlcicsIG1vZGUgPSAnbWFya2VycycsIHNpemUgPSB+TWFya2VyLnNpemUpICU+JVxuICAgIGFuaW1hdGlvbl9vcHRzKDIwMCwgZWFzaW5nID0gXCJjdWJpY1wiLCByZWRyYXcgPSBGKSAlPiUgYWRkX21hcmtlcnMoY29sb3I9fkNvdW50cnkpICU+JSBcbiAgICBsYXlvdXQodGl0bGU9XCJDb25zdW1wdGlvbiBvZiBPaWwgYW5kIENvYWwgYnkgRnJhbmNlIGFuZCBHZXJtYW55XCIpXG5cbmBgYCJ9 -->
+<pre class="r"><code>
+oilcoal %&gt;% filter(Country==c(&quot;France&quot;,&quot;Germany&quot;))%&gt;%
+    plot_ly(x = ~Oil, y =~Coal, frame=~Year, text = ~Country, 
+    hoverinfo = &quot;text&quot;, type = 'scatter', mode = 'markers', size = ~Marker.size) %&gt;%
+    animation_opts(200, easing = &quot;cubic&quot;, redraw = F) %&gt;% add_markers(color=~Country) %&gt;% 
+    layout(title=&quot;Consumption of Oil and Coal by France and Germany&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="line-plot-of-oilp-vs-country" class="section level3">
+<h3>2.3 Line plot of Oilp Vs Country</h3>
+<p>France and Germany exhibits same motion pattern. They are gradually increasing over time. All countries except China exhibits increased value till 1972. Advantage: A quick analysis can be done using the animated line plot when compared to bubble chart. It clearly shows the rise or fall of data points. The changes can easily be tracked over time. Disadvantage: It’s not visually appealing and not suitable for large range of data.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuT2lscCA8LSBvaWxjb2FsICU+JSBncm91cF9ieShZZWFyLCBDb3VudHJ5KSAlPiUgbXV0YXRlKG9pbHA9T2lsLyhPaWwrQ29hbCkpXG5PaWxwXzAgPC0gb2lsY29hbCAlPiUgZ3JvdXBfYnkoWWVhciwgQ291bnRyeSkgJT4lIG11dGF0ZShvaWxwPTApXG5yYmluZChPaWxwLCBPaWxwXzApICU+JSBcbnBsb3RfbHkoeCA9IH5vaWxwLCB5ID1+Q291bnRyeSwgZnJhbWU9flllYXIsIHRleHQgPSB+Q291bnRyeSwgXG4gICAgaG92ZXJpbmZvID0gXCJ0ZXh0XCIsIHR5cGUgPSAnc2NhdHRlcicsIG1vZGUgPSAnbGluZScsIHNpemUgPSB+TWFya2VyLnNpemUpICU+JVxuICAgIGFuaW1hdGlvbl9vcHRzKDIwMCwgZWFzaW5nID0gXCJjdWJpY1wiLCByZWRyYXcgPSBGKSAjJT4lIGFkZF9saW5lcyhjb2xvcj1+Q291bnRyeSlcblxuYGBgIn0= -->
+<pre class="r"><code>Oilp &lt;- oilcoal %&gt;% group_by(Year, Country) %&gt;% mutate(oilp=Oil/(Oil+Coal))
+Oilp_0 &lt;- oilcoal %&gt;% group_by(Year, Country) %&gt;% mutate(oilp=0)
+rbind(Oilp, Oilp_0) %&gt;% 
+plot_ly(x = ~oilp, y =~Country, frame=~Year, text = ~Country, 
+    hoverinfo = &quot;text&quot;, type = 'scatter', mode = 'line', size = ~Marker.size) %&gt;%
+    animation_opts(200, easing = &quot;cubic&quot;, redraw = F) #%&gt;% add_lines(color=~Country)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="line-plot-with-elastic-easing" class="section level3">
+<h3>2.4 Line plot with elastic easing</h3>
+<p>Advantage: Animated transition is smoother using “easing” function. Using “elastic” type of easing function, the minor changes can be easily tracked. When the change in data is larger or smaller, the transition will be clear for these changes and so, quite accurate analysis can be done when compared to easing function “cubic”. Disadvantage: The elastic type may return eased times slightly outside the range of some specific values.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmJpbmQoT2lscCwgT2lscF8wKSAlPiUgXG5wbG90X2x5KHggPSB+b2lscCwgeSA9fkNvdW50cnksIGZyYW1lPX5ZZWFyLCB0ZXh0ID0gfkNvdW50cnksIFxuICAgIGhvdmVyaW5mbyA9IFwidGV4dFwiLCB0eXBlID0gJ3NjYXR0ZXInLCBtb2RlID0gJ2xpbmUnLCBzaXplID0gfk1hcmtlci5zaXplKSAlPiVcbiAgICBhbmltYXRpb25fb3B0cygyMDAsIGVhc2luZyA9IFwiZWxhc3RpY1wiLCByZWRyYXcgPSBGKSAjJT4lIGFkZF9saW5lcyhjb2xvcj1+Q291bnRyeSlcbmBgYCJ9 -->
+<pre class="r"><code>rbind(Oilp, Oilp_0) %&gt;% 
+plot_ly(x = ~oilp, y =~Country, frame=~Year, text = ~Country, 
+    hoverinfo = &quot;text&quot;, type = 'scatter', mode = 'line', size = ~Marker.size) %&gt;%
+    animation_opts(200, easing = &quot;elastic&quot;, redraw = F) #%&gt;% add_lines(color=~Country)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="guided-2d-tour-visualizing-coal-consumption" class="section level3">
+<h3>2.5 Guided 2D-tour visualizing coal consumption</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudG91cl9kZiA8LSByZWFkLmNzdjIoXCJPaWxjb2FsLmNzdlwiLCBzZXAgPSBcIjtcIilcbnRvdXJfZGY8LSB0b3VyX2RmWywxOjVdXG5cbm1hdCA8LSByZXNjYWxlKHRvdXJfZGZbLDI6NV0pXG5yb3duYW1lcyhtYXQpIDwtIHRvdXJfZGZbLDFdXG5gYGAifQ== -->
+<pre class="r"><code>tour_df &lt;- read.csv2(&quot;Oilcoal.csv&quot;, sep = &quot;;&quot;)
+tour_df&lt;- tour_df[,1:5]
+
+mat &lt;- rescale(tour_df[,2:5])
+rownames(mat) &lt;- tour_df[,1]</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2V0LnNlZWQoMTIzNDUpXG4jdG91ciA8LSBuZXdfdG91cihtYXQsIGdyYW5kX3RvdXIoKSwgTlVMTClcbnRvdXI8LSBuZXdfdG91cihtYXQsIGd1aWRlZF90b3VyKGNtYXNzKSwgTlVMTClcblxuc3RlcHMgPC0gYygwLCByZXAoMS8xNSwgMjAwKSlcblByb2pzPC1sYXBwbHkoc3RlcHMsIGZ1bmN0aW9uKHN0ZXBfc2l6ZSl7ICBcbiAgc3RlcCA8LSB0b3VyKHN0ZXBfc2l6ZSlcbiAgaWYoaXMubnVsbChzdGVwKSkge1xuICAgIC5HbG9iYWxFbnYkdG91cjwtIG5ld190b3VyKG1hdCwgZ3VpZGVkX3RvdXIoY21hc3MpLCBOVUxMKVxuICAgIHN0ZXAgPC0gdG91cihzdGVwX3NpemUpXG4gIH1cbiAgc3RlcFxufVxuKVxuYGBgIn0= -->
+<pre class="r"><code>set.seed(12345)
+#tour &lt;- new_tour(mat, grand_tour(), NULL)
+tour&lt;- new_tour(mat, guided_tour(cmass), NULL)
+
+steps &lt;- c(0, rep(1/15, 200))
+Projs&lt;-lapply(steps, function(step_size){  
+  step &lt;- tour(step_size)
+  if(is.null(step)) {
+    .GlobalEnv$tour&lt;- new_tour(mat, guided_tour(cmass), NULL)
+    step &lt;- tour(step_size)
+  }
+  step
+}
+)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBwcm9qZWN0aW9uIG9mIGVhY2ggb2JzZXJ2YXRpb25cbnRvdXJfZGF0IDwtIGZ1bmN0aW9uKGkpIHtcbiAgc3RlcCA8LSBQcm9qc1tbaV1dXG4gIHByb2ogPC0gY2VudGVyKG1hdCAlKiUgc3RlcCRwcm9qKVxuICBkYXRhLmZyYW1lKHggPSBwcm9qWywxXSwgeSA9IHByb2pbLDJdLCBzdGF0ZSA9IHJvd25hbWVzKG1hdCkpXG59XG5cbiMgcHJvamVjdGlvbiBvZiBlYWNoIHZhcmlhYmxlJ3MgYXhpc1xucHJval9kYXQgPC0gZnVuY3Rpb24oaSkge1xuICBzdGVwIDwtIFByb2pzW1tpXV1cbiAgZGF0YS5mcmFtZShcbiAgICB4ID0gc3RlcCRwcm9qWywxXSwgeSA9IHN0ZXAkcHJvalssMl0sIHZhcmlhYmxlID0gY29sbmFtZXMobWF0KVxuICApXG59XG5gYGAifQ== -->
+<pre class="r"><code># projection of each observation
+tour_dat &lt;- function(i) {
+  step &lt;- Projs[[i]]
+  proj &lt;- center(mat %*% step$proj)
+  data.frame(x = proj[,1], y = proj[,2], state = rownames(mat))
+}
+
+# projection of each variable's axis
+proj_dat &lt;- function(i) {
+  step &lt;- Projs[[i]]
+  data.frame(
+    x = step$proj[,1], y = step$proj[,2], variable = colnames(mat)
+  )
+}</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3RlcHogPC0gY3Vtc3VtKHN0ZXBzKVxuXG4jIHRpZHkgdmVyc2lvbiBvZiB0b3VyIGRhdGFcblxudG91cl9kYXRzIDwtIGxhcHBseSgxOmxlbmd0aChzdGVwcyksIHRvdXJfZGF0KVxudG91cl9kYXR6IDwtIE1hcChmdW5jdGlvbih4LCB5KSBjYmluZCh4LCBzdGVwID0geSksIHRvdXJfZGF0cywgc3RlcHopXG50b3VyX2RhdCA8LSBkcGx5cjo6YmluZF9yb3dzKHRvdXJfZGF0eilcblxuIyB0aWR5IHZlcnNpb24gb2YgdG91ciBwcm9qZWN0aW9uIGRhdGFcbnByb2pfZGF0cyA8LSBsYXBwbHkoMTpsZW5ndGgoc3RlcHMpLCBwcm9qX2RhdClcbnByb2pfZGF0eiA8LSBNYXAoZnVuY3Rpb24oeCwgeSkgY2JpbmQoeCwgc3RlcCA9IHkpLCBwcm9qX2RhdHMsIHN0ZXB6KVxucHJval9kYXQgPC0gZHBseXI6OmJpbmRfcm93cyhwcm9qX2RhdHopXG5cbmF4IDwtIGxpc3QoXG4gIHRpdGxlID0gXCJcIiwgc2hvd3RpY2tsYWJlbHMgPSBGQUxTRSxcbiAgemVyb2xpbmUgPSBGQUxTRSwgc2hvd2dyaWQgPSBGQUxTRSxcbiAgcmFuZ2UgPSBjKC0xLjEsIDEuMSlcbilcbmBgYCJ9 -->
+<pre class="r"><code>stepz &lt;- cumsum(steps)
+
+# tidy version of tour data
+
+tour_dats &lt;- lapply(1:length(steps), tour_dat)
+tour_datz &lt;- Map(function(x, y) cbind(x, step = y), tour_dats, stepz)
+tour_dat &lt;- dplyr::bind_rows(tour_datz)
+
+# tidy version of tour projection data
+proj_dats &lt;- lapply(1:length(steps), proj_dat)
+proj_datz &lt;- Map(function(x, y) cbind(x, step = y), proj_dats, stepz)
+proj_dat &lt;- dplyr::bind_rows(proj_datz)
+
+ax &lt;- list(
+  title = &quot;&quot;, showticklabels = FALSE,
+  zeroline = FALSE, showgrid = FALSE,
+  range = c(-1.1, 1.1)
+)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBmb3IgbmljZWx5IGZvcm1hdHRlZCBzbGlkZXIgbGFiZWxzXG5vcHRpb25zKGRpZ2l0cyA9IDMpXG50b3VyX2RhdCA8LSBoaWdobGlnaHRfa2V5KHRvdXJfZGF0LCB+c3RhdGUsIGdyb3VwID0gXCJBXCIpXG50d29EX3RvdXIgPC0gcHJval9kYXQgJT4lXG4gIHBsb3RfbHkoeCA9IH54LCB5ID0gfnksIGZyYW1lID0gfnN0ZXAsIGNvbG9yID0gSShcImJsYWNrXCIpKSAlPiVcbiAgYWRkX3NlZ21lbnRzKHhlbmQgPSAwLCB5ZW5kID0gMCwgY29sb3IgPSBJKFwiZ3JheTgwXCIpKSAlPiVcbiAgYWRkX3RleHQodGV4dCA9IH52YXJpYWJsZSkgJT4lXG4gIGFkZF9tYXJrZXJzKGRhdGEgPSB0b3VyX2RhdCwgdGV4dCA9IH5zdGF0ZSwgaWRzID0gfnN0YXRlLCBob3ZlcmluZm8gPSBcInRleHRcIikgJT4lXG4gIGxheW91dCh4YXhpcyA9IGF4LCB5YXhpcyA9IGF4KSU+JWFuaW1hdGlvbl9vcHRzKGZyYW1lPTAsIHRyYW5zaXRpb249MCwgcmVkcmF3ID0gRilcbnR3b0RfdG91clxuYGBgIn0= -->
+<pre class="r"><code># for nicely formatted slider labels
+options(digits = 3)
+tour_dat &lt;- highlight_key(tour_dat, ~state, group = &quot;A&quot;)
+twoD_tour &lt;- proj_dat %&gt;%
+  plot_ly(x = ~x, y = ~y, frame = ~step, color = I(&quot;black&quot;)) %&gt;%
+  add_segments(xend = 0, yend = 0, color = I(&quot;gray80&quot;)) %&gt;%
+  add_text(text = ~variable) %&gt;%
+  add_markers(data = tour_dat, text = ~state, ids = ~state, hoverinfo = &quot;text&quot;) %&gt;%
+  layout(xaxis = ax, yaxis = ax)%&gt;%animation_opts(frame=0, transition=0, redraw = F)
+twoD_tour</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlZpc3VhbGl6YXRpb24gTGFiIDYiDQphdXRob3I6ICJSb3NobmkgU3VuZGFyYW11cnRoeSAocm9zc3U4MDkpICYgQnJpYW4gTWFzaW5kZSAoYnJpbWE3NDgpIg0KZGF0ZTogIjEyIE9jdG9iZXIgMjAxOCINCm91dHB1dDoNCiAgaHRtbF9kb2N1bWVudDoNCiAgICBkZl9wcmludDogcGFnZWQNCiAgaHRtbF9ub3RlYm9vazoNCiAgICB0aGVtZTogam91cm5hbA0KICBwZGZfZG9jdW1lbnQ6IGRlZmF1bHQNCmZvbnRzaXplOiAxMXB0DQojYmlibGlvZ3JhcGh5OiByZWZlcmVuY2VzLmJpYg0KLS0tDQoNCmBgYHtyIGxpYnJhcmllcywgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRSwgZWNobz1GQUxTRX0NCmxpYnJhcnkoZ2dwbG90MikNCmxpYnJhcnkocGxvdGx5KQ0KbGlicmFyeSh2aXNOZXR3b3JrKQ0KbGlicmFyeShkcGx5cikNCmBgYA0KDQojIyBBc3NpZ25tZW50IDENCg0KIyMjIDEuMSBQbG90IHRoZSBuZXR3b3JrDQoNCmBgYHtyIGVjaG89RkFMU0V9DQpkZjE8LXJlYWQuZGVsaW0oInRyYWluTWV0YS5kYXQiLCBoZWFkZXIgPSBULCBzZXA9J1x0JykgI1JlYWQgZmlsZQ0KZGYyPC1yZWFkLmRlbGltKCJ0cmFpbkRhdGEuZGF0IiwgaGVhZGVyID0gVCwgc2VwPSdcdCcpDQpgYGANCg0K</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiVmlzdWFsaXphdGlvbiBMYWIgNiIKYXV0aG9yOiAiUm9zaG5pIFN1bmRhcmFtdXJ0aHkgKHJvc3N1ODA5KSAmIEJyaWFuIE1hc2luZGUgKGJyaW1hNzQ4KSIKZGF0ZTogIjE1IE9jdG9iZXIgMjAxOCIKb3V0cHV0OgogIGh0bWxfZG9jdW1lbnQ6CiAgICBkZl9wcmludDogcGFnZWQKICBodG1sX25vdGVib29rOgogICAgdGhlbWU6IGpvdXJuYWwKICBwZGZfZG9jdW1lbnQ6IGRlZmF1bHQKZm9udHNpemU6IDExcHQKI2JpYmxpb2dyYXBoeTogcmVmZXJlbmNlcy5iaWIKLS0tCgpgYGB7ciBsaWJyYXJpZXMsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0UsIGVjaG89RkFMU0V9CmxpYnJhcnkoZ2dwbG90MikKbGlicmFyeShwbG90bHkpCmxpYnJhcnkodmlzTmV0d29yaykKbGlicmFyeSh0aWR5cikKbGlicmFyeSh0b3VycikKYGBgCgojIyBBc3NpZ25tZW50IDEKCiMjIyAxLjEgUGxvdCB0aGUgbmV0d29yawoKYGBge3IgZWNobz1GQUxTRX0KZGYxPC1yZWFkLmRlbGltKCJ0cmFpbk1ldGEuZGF0IiwgaGVhZGVyID0gVCwgc2VwPSdcdCcpICNSZWFkIGZpbGUKCmRmMjwtcmVhZC5kZWxpbSgidHJhaW5EYXRhLmRhdCIsIGhlYWRlciA9IFQsIHNlcD0nXHQnKQpgYGAKCiMjIEFzc2lnbm1lbnQgMgoKIyMjIDIuMSBCdWJibGUgY2hhcnQgKGFuaW1hdGVkKQoKRnJvbSBidWJibGUgc2l6ZSwgQ2hpbmEgYW5kIFVTIHNlZW1zIGxhcmdlciBjb25zdW1wdGlvbiBvZiBvaWwgYW5kIGNvYWwgd2hlbiBjb21wYXJlZCB0byBvdGhlciBjb3VudHJpZXMuIFRpbGwgMjAwMSwgY29uc3VtcHRpb24gb2YgY29hbCBieSBDaGluYSBpcyBncmFkdWFsbHkgaW5jcmVhc2VkLiBBZnRlciAyMDAxLCBpdCBpcyByYXBpZGx5IGluY3JlYXNpbmcuIFRpbGwgMTk3OSwgVVMgZXhoaWJpdHMgbW9yZSBjb25zdW1wdGlvbiBvZiBvaWwsIGFmdGVyIHRoYXQgYSBncmFkdWFsIGluY3JlYXNlIGluIGNvYWwgY29uc3VtcHRpb24gY2FuIGJlIHNlZW4gYWxvbmcgd2l0aCBvaWwuIFVLIGlzIHRoZSBsZWFzdCBjb25zdW1lciBvZiBvaWwgYW5kIGNvYWwgaW4gdGhpcyBjYXNlLiBDb25zdW1wdGlvbiBvZiBvaWwgYnkgRnJhbmNlIGFuZCBCcmF6aWwgaXMgbGVzcyB3aXRob3V0IHVzaW5nIGNvYWwuIEluZGlhIGhhcyB0aGUgZ3JhZHVhbCBpbmNyZWFzZSBpbiBjb25zdW1pbmcgYm90aCBvdmVyIHllYXJzLgoKYGBge3IgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0Kb2lsY29hbCA8LSByZWFkLmNzdigiT2lsY29hbC5jc3YiLCBzZXAgPSAiOyIsIGRlYyA9ICIsIiwgaGVhZGVyID0gVFJVRSwgcm93Lm5hbWVzID0gTlVMTCkKCm9pbGNvYWwgJT4lIHBsb3RfbHkoeCA9IH5PaWwsIHkgPX5Db2FsLCBmcmFtZT1+WWVhciwgdGV4dCA9IH5Db3VudHJ5LCAKICAgIGhvdmVyaW5mbyA9ICJ0ZXh0IiwgdHlwZSA9ICdzY2F0dGVyJywgbW9kZSA9ICdtYXJrZXJzJywgc2l6ZSA9IH5NYXJrZXIuc2l6ZSkgJT4lCiAgICBhbmltYXRpb25fb3B0cygyMDAsIGVhc2luZyA9ICJjaXJjbGUiLCByZWRyYXcgPSBGKSAlPiUgYWRkX21hcmtlcnMoY29sb3I9fkNvdW50cnkpICU+JSAKICAgIGxheW91dCh0aXRsZT0iQ29uc3VtcHRpb24gb2YgT2lsIGFuZCBDb2FsIGJ5IENvdW50cmllcyIpCgpgYGAKCiMjIyAyLjIgTW90aW9uIGNoYXJ0IGZvciBGcmFuY2UgYW5kIEdlcm1hbnkKCkZyb20gdGhlIGF2b3ZlIGJ1YmJsZSBjaGFydCwgaXQgc2VlbXMgRnJhbmNlIGFuZCBHZXJtYW55IGhhZCBzaW1pbGFyIG1vdGlvbiBwYXR0ZXJucy4gQ29uc3VtcHRpb24gb2YgY29hbCBieSBGcmFuY2UgcmVkdWNlZCBncmFkdWFsbHkgYmVjYXVzZSBvZiBudWNsZWFyIHBvd2VyLiBGcmFuY2UncyBwcmVzZW50IGVsZWN0cmljaXR5IGdlbmVyYXRpb24gbWl4IGlzIGEgcmVzdWx0IG9mIHRoZSBGcmVuY2ggZ292ZXJubWVudCBkZWNpZGluZyBpbiAxOTc0LCBqdXN0IGFmdGVyIHRoZSBmaXJzdCBvaWwgc2hvY2ssIHRvIGV4cGFuZCByYXBpZGx5IHRoZSBjb3VudHJ5J3MgbnVjbGVhciBwb3dlciBjYXBhY2l0eSwgdXNpbmcgV2VzdGluZ2hvdXNlIHRlY2hub2xvZ3kuIEFib3V0IDc1JSBvZiBlbGVjdHJpY2l0eSBpcyBmcm9tIG51Y2xlYXIgZW5lcmd5IGFuZCAxNyUgb2YgRnJhbmNlJ3MgZWxlY3RyaWNpdHkgaXMgZnJvbSByZWN5Y2xlZCBudWNsZWFyIGZ1ZWwuIEl0IHNlZW1zIGFmdGVyIDE5OTAsIEdlcm1hbnkncyBjb2FsIGFuZCBvaWwgY29uc3VtcHRpb24gZ2V0cyBkZWNyZWFzZWQuIEluIDE5OTAsIHRoZSBHZXJtYW4gcmV1bmlmaWNhdGlvbiBoYXBwZW5lZCAoZWFzdCBhbmQgd2VzdCBHZXJtYW55IHVuaXRlZCkuIFRoZSBzYWxlIG9mIG9pbCwgcHJldmlvdXNseSBhbiBpbXBvcnRhbnQgc291cmNlIG9mIGhhcmQgY3VycmVuY3ksIGJlY2FtZSBsZXNzIHByb2ZpdGFibGUgZHVlIHRvIGNoYW5nZXMgaW4gdGhlIHdvcmxkIGVjb25vbXkuCmBgYHtyIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CgpvaWxjb2FsICU+JSBmaWx0ZXIoQ291bnRyeT09YygiRnJhbmNlIiwiR2VybWFueSIpKSU+JQogICAgcGxvdF9seSh4ID0gfk9pbCwgeSA9fkNvYWwsIGZyYW1lPX5ZZWFyLCB0ZXh0ID0gfkNvdW50cnksIAogICAgaG92ZXJpbmZvID0gInRleHQiLCB0eXBlID0gJ3NjYXR0ZXInLCBtb2RlID0gJ21hcmtlcnMnLCBzaXplID0gfk1hcmtlci5zaXplKSAlPiUKICAgIGFuaW1hdGlvbl9vcHRzKDIwMCwgZWFzaW5nID0gImN1YmljIiwgcmVkcmF3ID0gRikgJT4lIGFkZF9tYXJrZXJzKGNvbG9yPX5Db3VudHJ5KSAlPiUgCiAgICBsYXlvdXQodGl0bGU9IkNvbnN1bXB0aW9uIG9mIE9pbCBhbmQgQ29hbCBieSBGcmFuY2UgYW5kIEdlcm1hbnkiKQoKYGBgCgojIyMgMi4zIExpbmUgcGxvdCBvZiBPaWxwIFZzIENvdW50cnkKCkZyYW5jZSBhbmQgR2VybWFueSBleGhpYml0cyBzYW1lIG1vdGlvbiBwYXR0ZXJuLiBUaGV5IGFyZSBncmFkdWFsbHkgaW5jcmVhc2luZyBvdmVyIHRpbWUuIEFsbCBjb3VudHJpZXMgZXhjZXB0IENoaW5hIGV4aGliaXRzIGluY3JlYXNlZCB2YWx1ZSB0aWxsIDE5NzIuCkFkdmFudGFnZTogCkEgcXVpY2sgYW5hbHlzaXMgY2FuIGJlIGRvbmUgdXNpbmcgdGhlIGFuaW1hdGVkIGxpbmUgcGxvdCB3aGVuIGNvbXBhcmVkIHRvIGJ1YmJsZSBjaGFydC4gSXQgY2xlYXJseSBzaG93cyB0aGUgcmlzZSBvciBmYWxsIG9mIGRhdGEgcG9pbnRzLiBUaGUgY2hhbmdlcyBjYW4gZWFzaWx5IGJlIHRyYWNrZWQgb3ZlciB0aW1lLgpEaXNhZHZhbnRhZ2U6IApJdCdzIG5vdCB2aXN1YWxseSBhcHBlYWxpbmcgYW5kIG5vdCBzdWl0YWJsZSBmb3IgbGFyZ2UgcmFuZ2Ugb2YgZGF0YS4KYGBge3IgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0KT2lscCA8LSBvaWxjb2FsICU+JSBncm91cF9ieShZZWFyLCBDb3VudHJ5KSAlPiUgbXV0YXRlKG9pbHA9T2lsLyhPaWwrQ29hbCkpCk9pbHBfMCA8LSBvaWxjb2FsICU+JSBncm91cF9ieShZZWFyLCBDb3VudHJ5KSAlPiUgbXV0YXRlKG9pbHA9MCkKcmJpbmQoT2lscCwgT2lscF8wKSAlPiUgCnBsb3RfbHkoeCA9IH5vaWxwLCB5ID1+Q291bnRyeSwgZnJhbWU9flllYXIsIHRleHQgPSB+Q291bnRyeSwgCiAgICBob3ZlcmluZm8gPSAidGV4dCIsIHR5cGUgPSAnc2NhdHRlcicsIG1vZGUgPSAnbGluZScsIHNpemUgPSB+TWFya2VyLnNpemUpICU+JQogICAgYW5pbWF0aW9uX29wdHMoMjAwLCBlYXNpbmcgPSAiY3ViaWMiLCByZWRyYXcgPSBGKSAjJT4lIGFkZF9saW5lcyhjb2xvcj1+Q291bnRyeSkKCmBgYAoKIyMjIDIuNCBMaW5lIHBsb3Qgd2l0aCBlbGFzdGljIGVhc2luZwoKQWR2YW50YWdlOgpBbmltYXRlZCB0cmFuc2l0aW9uIGlzIHNtb290aGVyIHVzaW5nICJlYXNpbmciIGZ1bmN0aW9uLiBVc2luZyAiZWxhc3RpYyIgdHlwZSBvZiBlYXNpbmcgZnVuY3Rpb24sIHRoZSBtaW5vciBjaGFuZ2VzIGNhbiBiZSBlYXNpbHkgdHJhY2tlZC4gV2hlbiB0aGUgY2hhbmdlIGluIGRhdGEgaXMgbGFyZ2VyIG9yIHNtYWxsZXIsIHRoZSB0cmFuc2l0aW9uIHdpbGwgYmUgY2xlYXIgZm9yIHRoZXNlIGNoYW5nZXMgYW5kIHNvLCBxdWl0ZSBhY2N1cmF0ZSBhbmFseXNpcyBjYW4gYmUgZG9uZSB3aGVuIGNvbXBhcmVkIHRvIGVhc2luZyBmdW5jdGlvbiAiY3ViaWMiLgpEaXNhZHZhbnRhZ2U6ClRoZSBlbGFzdGljIHR5cGUgbWF5IHJldHVybiBlYXNlZCB0aW1lcyBzbGlnaHRseSBvdXRzaWRlIHRoZSByYW5nZSBvZiBzb21lIHNwZWNpZmljIHZhbHVlcy4KCmBgYHtyIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CnJiaW5kKE9pbHAsIE9pbHBfMCkgJT4lIApwbG90X2x5KHggPSB+b2lscCwgeSA9fkNvdW50cnksIGZyYW1lPX5ZZWFyLCB0ZXh0ID0gfkNvdW50cnksIAogICAgaG92ZXJpbmZvID0gInRleHQiLCB0eXBlID0gJ3NjYXR0ZXInLCBtb2RlID0gJ2xpbmUnLCBzaXplID0gfk1hcmtlci5zaXplKSAlPiUKICAgIGFuaW1hdGlvbl9vcHRzKDIwMCwgZWFzaW5nID0gImVsYXN0aWMiLCByZWRyYXcgPSBGKSAjJT4lIGFkZF9saW5lcyhjb2xvcj1+Q291bnRyeSkKYGBgCgojIyMgMi41IEd1aWRlZCAyRC10b3VyIHZpc3VhbGl6aW5nIGNvYWwgY29uc3VtcHRpb24KCmBgYHtyIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0UsIGV2YWw9RkFMU0UsIGVjaG89RkFMU0V9CnRvdXJfZGYgPC0gcmVhZC5jc3YyKCJPaWxjb2FsLmNzdiIsIHNlcCA9ICI7IikKdG91cl9kZjwtIHRvdXJfZGZbLDE6NV0KCm1hdCA8LSByZXNjYWxlKHRvdXJfZGZbLDI6NV0pCnJvd25hbWVzKG1hdCkgPC0gdG91cl9kZlssMV0KCnNldC5zZWVkKDEyMzQ1KQojdG91ciA8LSBuZXdfdG91cihtYXQsIGdyYW5kX3RvdXIoKSwgTlVMTCkKdG91cjwtIG5ld190b3VyKG1hdCwgZ3VpZGVkX3RvdXIoY21hc3MpLCBOVUxMKQoKc3RlcHMgPC0gYygwLCByZXAoMS8xNSwgMjAwKSkKUHJvanM8LWxhcHBseShzdGVwcywgZnVuY3Rpb24oc3RlcF9zaXplKXsgIAogIHN0ZXAgPC0gdG91cihzdGVwX3NpemUpCiAgaWYoaXMubnVsbChzdGVwKSkgewogICAgLkdsb2JhbEVudiR0b3VyPC0gbmV3X3RvdXIobWF0LCBndWlkZWRfdG91cihjbWFzcyksIE5VTEwpCiAgICBzdGVwIDwtIHRvdXIoc3RlcF9zaXplKQogIH0KICBzdGVwCn0KKQoKIyBwcm9qZWN0aW9uIG9mIGVhY2ggb2JzZXJ2YXRpb24KdG91cl9kYXQgPC0gZnVuY3Rpb24oaSkgewogIHN0ZXAgPC0gUHJvanNbW2ldXQogIHByb2ogPC0gY2VudGVyKG1hdCAlKiUgc3RlcCRwcm9qKQogIGRhdGEuZnJhbWUoeCA9IHByb2pbLDFdLCB5ID0gcHJvalssMl0sIHN0YXRlID0gcm93bmFtZXMobWF0KSkKfQoKIyBwcm9qZWN0aW9uIG9mIGVhY2ggdmFyaWFibGUncyBheGlzCnByb2pfZGF0IDwtIGZ1bmN0aW9uKGkpIHsKICBzdGVwIDwtIFByb2pzW1tpXV0KICBkYXRhLmZyYW1lKAogICAgeCA9IHN0ZXAkcHJvalssMV0sIHkgPSBzdGVwJHByb2pbLDJdLCB2YXJpYWJsZSA9IGNvbG5hbWVzKG1hdCkKICApCn0KCnN0ZXB6IDwtIGN1bXN1bShzdGVwcykKCiMgdGlkeSB2ZXJzaW9uIG9mIHRvdXIgZGF0YQoKdG91cl9kYXRzIDwtIGxhcHBseSgxOmxlbmd0aChzdGVwcyksIHRvdXJfZGF0KQp0b3VyX2RhdHogPC0gTWFwKGZ1bmN0aW9uKHgsIHkpIGNiaW5kKHgsIHN0ZXAgPSB5KSwgdG91cl9kYXRzLCBzdGVweikKdG91cl9kYXQgPC0gZHBseXI6OmJpbmRfcm93cyh0b3VyX2RhdHopCgojIHRpZHkgdmVyc2lvbiBvZiB0b3VyIHByb2plY3Rpb24gZGF0YQpwcm9qX2RhdHMgPC0gbGFwcGx5KDE6bGVuZ3RoKHN0ZXBzKSwgcHJval9kYXQpCnByb2pfZGF0eiA8LSBNYXAoZnVuY3Rpb24oeCwgeSkgY2JpbmQoeCwgc3RlcCA9IHkpLCBwcm9qX2RhdHMsIHN0ZXB6KQpwcm9qX2RhdCA8LSBkcGx5cjo6YmluZF9yb3dzKHByb2pfZGF0eikKCmF4IDwtIGxpc3QoCiAgdGl0bGUgPSAiIiwgc2hvd3RpY2tsYWJlbHMgPSBGQUxTRSwKICB6ZXJvbGluZSA9IEZBTFNFLCBzaG93Z3JpZCA9IEZBTFNFLAogIHJhbmdlID0gYygtMS4xLCAxLjEpCikKCiMgZm9yIG5pY2VseSBmb3JtYXR0ZWQgc2xpZGVyIGxhYmVscwpvcHRpb25zKGRpZ2l0cyA9IDMpCnRvdXJfZGF0IDwtIGhpZ2hsaWdodF9rZXkodG91cl9kYXQsIH5zdGF0ZSwgZ3JvdXAgPSAiQSIpCnR3b0RfdG91ciA8LSBwcm9qX2RhdCAlPiUKICBwbG90X2x5KHggPSB+eCwgeSA9IH55LCBmcmFtZSA9IH5zdGVwLCBjb2xvciA9IEkoImJsYWNrIikpICU+JQogIGFkZF9zZWdtZW50cyh4ZW5kID0gMCwgeWVuZCA9IDAsIGNvbG9yID0gSSgiZ3JheTgwIikpICU+JQogIGFkZF90ZXh0KHRleHQgPSB+dmFyaWFibGUpICU+JQogIGFkZF9tYXJrZXJzKGRhdGEgPSB0b3VyX2RhdCwgdGV4dCA9IH5zdGF0ZSwgaWRzID0gfnN0YXRlLCBob3ZlcmluZm8gPSAidGV4dCIpICU+JQogIGxheW91dCh4YXhpcyA9IGF4LCB5YXhpcyA9IGF4KSU+JWFuaW1hdGlvbl9vcHRzKGZyYW1lPTAsIHRyYW5zaXRpb249MCwgcmVkcmF3ID0gRikKdHdvRF90b3VyCmBgYAoKYGBge3IgZGF0YX0KdG91cl9kZiA8LSByZWFkLmNzdjIoIk9pbGNvYWwuY3N2Iiwgc2VwID0gIjsiKQp0b3VyX2RmPC0gdG91cl9kZlssMTo1XQoKbWF0IDwtIHJlc2NhbGUodG91cl9kZlssMjo1XSkKcm93bmFtZXMobWF0KSA8LSB0b3VyX2RmWywxXQpgYGAKCmBgYHtyfQpzZXQuc2VlZCgxMjM0NSkKI3RvdXIgPC0gbmV3X3RvdXIobWF0LCBncmFuZF90b3VyKCksIE5VTEwpCnRvdXI8LSBuZXdfdG91cihtYXQsIGd1aWRlZF90b3VyKGNtYXNzKSwgTlVMTCkKCnN0ZXBzIDwtIGMoMCwgcmVwKDEvMTUsIDIwMCkpClByb2pzPC1sYXBwbHkoc3RlcHMsIGZ1bmN0aW9uKHN0ZXBfc2l6ZSl7ICAKICBzdGVwIDwtIHRvdXIoc3RlcF9zaXplKQogIGlmKGlzLm51bGwoc3RlcCkpIHsKICAgIC5HbG9iYWxFbnYkdG91cjwtIG5ld190b3VyKG1hdCwgZ3VpZGVkX3RvdXIoY21hc3MpLCBOVUxMKQogICAgc3RlcCA8LSB0b3VyKHN0ZXBfc2l6ZSkKICB9CiAgc3RlcAp9CikKYGBgCgpgYGB7cn0KIyBwcm9qZWN0aW9uIG9mIGVhY2ggb2JzZXJ2YXRpb24KdG91cl9kYXQgPC0gZnVuY3Rpb24oaSkgewogIHN0ZXAgPC0gUHJvanNbW2ldXQogIHByb2ogPC0gY2VudGVyKG1hdCAlKiUgc3RlcCRwcm9qKQogIGRhdGEuZnJhbWUoeCA9IHByb2pbLDFdLCB5ID0gcHJvalssMl0sIHN0YXRlID0gcm93bmFtZXMobWF0KSkKfQoKIyBwcm9qZWN0aW9uIG9mIGVhY2ggdmFyaWFibGUncyBheGlzCnByb2pfZGF0IDwtIGZ1bmN0aW9uKGkpIHsKICBzdGVwIDwtIFByb2pzW1tpXV0KICBkYXRhLmZyYW1lKAogICAgeCA9IHN0ZXAkcHJvalssMV0sIHkgPSBzdGVwJHByb2pbLDJdLCB2YXJpYWJsZSA9IGNvbG5hbWVzKG1hdCkKICApCn0KYGBgCgpgYGB7cn0Kc3RlcHogPC0gY3Vtc3VtKHN0ZXBzKQoKIyB0aWR5IHZlcnNpb24gb2YgdG91ciBkYXRhCgp0b3VyX2RhdHMgPC0gbGFwcGx5KDE6bGVuZ3RoKHN0ZXBzKSwgdG91cl9kYXQpCnRvdXJfZGF0eiA8LSBNYXAoZnVuY3Rpb24oeCwgeSkgY2JpbmQoeCwgc3RlcCA9IHkpLCB0b3VyX2RhdHMsIHN0ZXB6KQp0b3VyX2RhdCA8LSBkcGx5cjo6YmluZF9yb3dzKHRvdXJfZGF0eikKCiMgdGlkeSB2ZXJzaW9uIG9mIHRvdXIgcHJvamVjdGlvbiBkYXRhCnByb2pfZGF0cyA8LSBsYXBwbHkoMTpsZW5ndGgoc3RlcHMpLCBwcm9qX2RhdCkKcHJval9kYXR6IDwtIE1hcChmdW5jdGlvbih4LCB5KSBjYmluZCh4LCBzdGVwID0geSksIHByb2pfZGF0cywgc3RlcHopCnByb2pfZGF0IDwtIGRwbHlyOjpiaW5kX3Jvd3MocHJval9kYXR6KQoKYXggPC0gbGlzdCgKICB0aXRsZSA9ICIiLCBzaG93dGlja2xhYmVscyA9IEZBTFNFLAogIHplcm9saW5lID0gRkFMU0UsIHNob3dncmlkID0gRkFMU0UsCiAgcmFuZ2UgPSBjKC0xLjEsIDEuMSkKKQpgYGAKCmBgYHtyfQojIGZvciBuaWNlbHkgZm9ybWF0dGVkIHNsaWRlciBsYWJlbHMKb3B0aW9ucyhkaWdpdHMgPSAzKQp0b3VyX2RhdCA8LSBoaWdobGlnaHRfa2V5KHRvdXJfZGF0LCB+c3RhdGUsIGdyb3VwID0gIkEiKQp0d29EX3RvdXIgPC0gcHJval9kYXQgJT4lCiAgcGxvdF9seSh4ID0gfngsIHkgPSB+eSwgZnJhbWUgPSB+c3RlcCwgY29sb3IgPSBJKCJibGFjayIpKSAlPiUKICBhZGRfc2VnbWVudHMoeGVuZCA9IDAsIHllbmQgPSAwLCBjb2xvciA9IEkoImdyYXk4MCIpKSAlPiUKICBhZGRfdGV4dCh0ZXh0ID0gfnZhcmlhYmxlKSAlPiUKICBhZGRfbWFya2VycyhkYXRhID0gdG91cl9kYXQsIHRleHQgPSB+c3RhdGUsIGlkcyA9IH5zdGF0ZSwgaG92ZXJpbmZvID0gInRleHQiKSAlPiUKICBsYXlvdXQoeGF4aXMgPSBheCwgeWF4aXMgPSBheCklPiVhbmltYXRpb25fb3B0cyhmcmFtZT0wLCB0cmFuc2l0aW9uPTAsIHJlZHJhdyA9IEYpCnR3b0RfdG91cgpgYGAKCg==</div>
 
 
 
