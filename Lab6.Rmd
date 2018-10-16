@@ -17,7 +17,6 @@ library(ggplot2)
 library(plotly)
 library(visNetwork)
 library(tidyr)
-library(scales)
 ```
 
 ## Assignment 1
@@ -34,18 +33,21 @@ df2<-read.delim("trainData.dat", header = T, sep='\t')
 
 ### 2.1 Bubble chart (animated)
 
+From bubble size, China and US seems larger consumption of oil and coal when compared to other countries. Till 2001, consumption of coal by China is gradually increased. After 2001, it is rapidly increasing. Till 1979, US exhibits more consumption of oil, after that a gradual increase in coal consumption can be seen along with oil. UK is the least consumer of oil and coal in this case. Consumption of oil by France and Brazil is less without using coal. India has the gradual increase in consuming both over years.
+
 ```{r message=FALSE, warning=FALSE}
 oilcoal <- read.csv("Oilcoal.csv", sep = ";", dec = ",", header = TRUE, row.names = NULL)
 
 oilcoal %>% plot_ly(x = ~Oil, y =~Coal, frame=~Year, text = ~Country, 
     hoverinfo = "text", type = 'scatter', mode = 'markers', size = ~Marker.size) %>%
-    animation_opts(200, easing = "cubic", redraw = F) %>% add_markers(color=~Country) %>% 
+    animation_opts(200, easing = "circle", redraw = F) %>% add_markers(color=~Country) %>% 
     layout(title="Consumption of Oil and Coal by Countries")
 
 ```
 
 ### 2.2 Motion chart for France and Germany
 
+From the avove bubble chart, it seems France and Germany had similar motion patterns. Consumption of coal by France reduced gradually because of nuclear power. France's present electricity generation mix is a result of the French government deciding in 1974, just after the first oil shock, to expand rapidly the country's nuclear power capacity, using Westinghouse technology. About 75% of electricity is from nuclear energy and 17% of France's electricity is from recycled nuclear fuel. It seems after 1990, Germany's coal and oil consumption gets decreased. In 1990, the German reunification happened (east and west Germany united). The sale of oil, previously an important source of hard currency, became less profitable due to changes in the world economy.
 ```{r message=FALSE, warning=FALSE}
 
 oilcoal %>% filter(Country==c("France","Germany"))%>%
@@ -58,6 +60,11 @@ oilcoal %>% filter(Country==c("France","Germany"))%>%
 
 ### 2.3 Line plot of Oilp Vs Country
 
+France and Germany exhibits same motion pattern. They are gradually increasing over time. All countries except China exhibits increased value till 1972.
+Advantage: 
+A quick analysis can be done using the animated line plot when compared to bubble chart. It clearly shows the rise or fall of data points. The changes can easily be tracked over time.
+Disadvantage: 
+It's not visually appealing and not suitable for large range of data.
 ```{r message=FALSE, warning=FALSE}
 Oilp <- oilcoal %>% group_by(Year, Country) %>% mutate(oilp=Oil/(Oil+Coal))
 Oilp_0 <- oilcoal %>% group_by(Year, Country) %>% mutate(oilp=0)
@@ -69,6 +76,11 @@ plot_ly(x = ~oilp, y =~Country, frame=~Year, text = ~Country,
 ```
 
 ### 2.4 Line plot with elastic easing
+
+Advantage:
+Animated transition is smoother using "easing" function. Using "elastic" type of easing function, the minor changes can be easily tracked. When the change in data is larger or smaller, the transition will be clear for these changes and so, quite accurate analysis can be done when compared to easing function "cubic".
+Disadvantage:
+The elastic type may return eased times slightly outside the range of some specific values.
 
 ```{r message=FALSE, warning=FALSE}
 rbind(Oilp, Oilp_0) %>% 
